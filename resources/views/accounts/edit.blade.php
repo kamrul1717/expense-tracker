@@ -5,17 +5,17 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Create New Category</div>
+                <div class="card-header">Edit Account: {{ $account->name }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('categories.store') }}">
+                    <form method="POST" action="{{ route('accounts.update', $account) }}">
                         @csrf
+                        @method('PUT')
 
                         <div class="form-group row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right">Account Name</label>
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" 
-                                    name="name" value="{{ old('name') }}" required autofocus>
+                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $account->name) }}" required>
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -25,11 +25,11 @@
                         </div>
 
                         <div class="form-group row mb-3">
-                            <label for="type" class="col-md-4 col-form-label text-md-right">Type</label>
+                            <label for="type" class="col-md-4 col-form-label text-md-right">Account Type</label>
                             <div class="col-md-6">
                                 <select id="type" class="form-control @error('type') is-invalid @enderror" name="type" required>
-                                    @foreach(\App\Models\Category::TYPES as $key => $type)
-                                        <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>
+                                    @foreach(\App\Models\Account::TYPES as $key => $type)
+                                        <option value="{{ $key }}" {{ old('type', $account->type) == $key ? 'selected' : '' }}>
                                             {{ $type }}
                                         </option>
                                     @endforeach
@@ -43,11 +43,10 @@
                         </div>
 
                         <div class="form-group row mb-3">
-                            <label for="color" class="col-md-4 col-form-label text-md-right">Color</label>
+                            <label for="balance" class="col-md-4 col-form-label text-md-right">Current Balance</label>
                             <div class="col-md-6">
-                                <input id="color" type="color" class="form-control @error('color') is-invalid @enderror" 
-                                    name="color" value="{{ old('color', '#007bff') }}" required>
-                                @error('color')
+                                <input id="balance" type="number" step="0.01" class="form-control @error('balance') is-invalid @enderror" name="balance" value="{{ old('balance', $account->balance) }}" required>
+                                @error('balance')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -56,26 +55,23 @@
                         </div>
 
                         <div class="form-group row mb-3">
-                            <label for="icon" class="col-md-4 col-form-label text-md-right">Icon</label>
+                            <label for="currency" class="col-md-4 col-form-label text-md-right">Currency</label>
                             <div class="col-md-6">
-                                <input id="icon" type="text" class="form-control @error('icon') is-invalid @enderror" 
-                                    name="icon" value="{{ old('icon') }}" placeholder="fas fa-tag">
-                                @error('icon')
+                                <input id="currency" type="text" class="form-control @error('currency') is-invalid @enderror" name="currency" value="{{ old('currency', $account->currency) }}" required maxlength="3">
+                                @error('currency')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                                <small class="form-text text-muted">
-                                    Use Font Awesome icon classes (e.g. fas fa-home)
-                                </small>
                             </div>
                         </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                    Create Category
+                                    Update Account
                                 </button>
+                                <a href="{{ route('accounts.index') }}" class="btn btn-outline-secondary">Cancel</a>
                             </div>
                         </div>
                     </form>

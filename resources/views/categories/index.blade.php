@@ -4,7 +4,9 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Categories</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Add Category</a>
+        <a href="{{ route('categories.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Category
+        </a>
     </div>
 
     <div class="card">
@@ -14,22 +16,28 @@
                     <tr>
                         <th>Name</th>
                         <th>Type</th>
+                        <th>Color</th>
+                        <th>Icon</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($categories as $category)
                     <tr>
+                        <td>{{ $category->name }}</td>
+                        <td>{{ $category->type_name }}</td>
                         <td>
-                            <span class="badge" style="background-color: {{ $category->color }};">
-                                @if($category->icon)
-                                <i class="{{ $category->icon }}"></i>
-                                @endif
-                                {{ $category->name }}
+                            <span class="badge" style="background-color: {{ $category->color }}; color: white">
+                                {{ $category->color }}
                             </span>
                         </td>
-                        <td>{{ ucfirst($category->type) }}</td>
                         <td>
+                            @if($category->icon)
+                            <i class="{{ $category->icon }}"></i>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('categories.show', $category) }}" class="btn btn-sm btn-outline-info">View</a>
                             <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                             <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline">
                                 @csrf

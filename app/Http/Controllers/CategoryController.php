@@ -9,21 +9,26 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = auth()->user()->categories()->latest()->paginate(10);
+        $categories = auth()->user()->categories()
+            ->latest()
+            ->paginate(10);
+            
         return view('categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('categories.create');
+        return view('categories.create', [
+            'types' => Category::TYPES
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,NULL,id,user_id,'.auth()->id(),
             'type' => 'required|in:expense,income',
-            'color' => 'nullable|string|max:20',
+            'color' => 'required|string|max:20',
             'icon' => 'nullable|string|max:50',
         ]);
 
@@ -36,13 +41,23 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $this->authorize('view', $category);
-        return view('categories.show', compact('category'));
+        
+        $transactions = $category->transactions()
+            ->with('account')
+            ->latest()
+            ->paginate(10);
+            
+        return view('categories.show', compact('category', 'transactions'));
     }
 
     public function edit(Category $category)
     {
         $this->authorize('update', $category);
-        return view('categories.edit', compact('category'));
+        
+        return view('categories.edit', [
+            'category' => $category,
+            'types' => Category::TYPES
+        ]);
     }
 
     public function update(Request $request, Category $category)
@@ -50,9 +65,9 @@ class CategoryController extends Controller
         $this->authorize('update', $category);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,'.$category->id.',id,user_id,'.auth()->id(),
             'type' => 'required|in:expense,income',
-            'color' => 'nullable|string|max:20',
+            'color' => 'required|string|max:20',
             'icon' => 'nullable|string|max:50',
         ]);
 
@@ -65,6 +80,12 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $this->authorize('delete', $category);
+
+        if ($category->transactions()->exists()) {
+            return redirect()->back()
+                ->with('error', 'Cannot delete category with transactions.');
+        }
+
         $category->delete();
 
         return redirect()->route('categories.index')

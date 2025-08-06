@@ -34,11 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('budgets', BudgetController::class);
 
     // Reports
-    Route::prefix('reports')->group(function () {
-        Route::get('/', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('/spending-by-category', [ReportController::class, 'spendingByCategory']);
-        Route::get('/income-vs-expense', [ReportController::class, 'incomeVsExpense']);
-    });
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/spending-by-category', [ReportController::class, 'spendingByCategory'])->name('reports.spending-by-category');
+    Route::get('/reports/income-vs-expense', [ReportController::class, 'incomeVsExpense'])->name('reports.income-vs-expense');
+    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
